@@ -1,0 +1,10 @@
+recent_n_rows: 600
+w_list: [20]
+tau_list: [20, 40, 60]
+topk: 10
+prefilter:
+  keep_pct: 0.03
+  max_keep: 800
+dtw_radius: 10
+only_noncritical_query: true
+n_jobs: -1
