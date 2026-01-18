@@ -14,6 +14,27 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.append(str(REPO_ROOT))
 
 
+def _ensure_gower_dependency() -> None:
+    try:
+        importlib.import_module("gower")
+        return
+    except ImportError:
+        pass
+
+    fallback_path = REPO_ROOT / "0118" / "gower.py"
+    if not fallback_path.exists():
+        return
+
+    spec = importlib.util.spec_from_file_location("gower", fallback_path)
+    if spec and spec.loader:
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        sys.modules["gower"] = module
+
+
+_ensure_gower_dependency()
+
+
 def _load_dtw_functions():
     spec = importlib.util.find_spec("dtwParallel.dtw_functions")
     if spec is not None:
