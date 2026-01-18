@@ -1,0 +1,48 @@
+*** Begin Patch
+*** Update File: dtwParallel/dtw_functions.py
+@@
+ def dtw_tensor_3d(mts1, mts2, input_obj):
+@@
+     if input_obj.dtw_to_kernel:
+         return data, transform_dtw_to_kernel(data, input_obj.sigma_kernel)
+ 
+     return data
++
++
++def z_norm_2d(ts):
++    """Z-normalize a 2D time series (T x D)."""
++    ts_arr = to_time_series(ts)
++    mean = ts_arr.mean(axis=0, keepdims=True)
++    std = ts_arr.std(axis=0, keepdims=True)
++    std = np.where(std == 0, 1.0, std)
++    return (ts_arr - mean) / std
++
++
++def dtw_scalar(
++    ts1,
++    ts2,
++    z_norm=False,
++    type_dtw="d",
++    constrained_path_search=None,
++    local_dissimilarity=distance.euclidean,
++    itakura_max_slope=None,
++    sakoe_chiba_radius=None,
++):
++    """Compute DTW distance and return it as a float."""
++    ts1_arr = to_time_series(ts1)
++    ts2_arr = to_time_series(ts2)
++    if z_norm:
++        ts1_arr = z_norm_2d(ts1_arr)
++        ts2_arr = z_norm_2d(ts2_arr)
++    distance_value = dtw(
++        ts1_arr,
++        ts2_arr,
++        type_dtw=type_dtw,
++        constrained_path_search=constrained_path_search,
++        local_dissimilarity=local_dissimilarity,
++        MTS=True,
++        itakura_max_slope=itakura_max_slope,
++        sakoe_chiba_radius=sakoe_chiba_radius,
++    )
++    return float(distance_value)
+*** End Patch
